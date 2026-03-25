@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Hexagon,
   Search,
@@ -12,12 +12,18 @@ import {
   Target,
   LogOut,
   ChevronDown,
+  Sparkles,
+  Zap,
+  Globe,
+  MapPin,
+  ArrowRight,
 } from 'lucide-react';
 import Link from 'next/link';
 import { GamificationHeader } from '@/components/GamificationHeader';
 import { JobCard } from '@/components/JobCard';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 
 interface Profile {
   id: string;
@@ -93,141 +99,184 @@ export default function DashboardClient({
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50">
-      {/* Background */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden -z-0">
-        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[120px]" />
+    <div className="min-h-screen bg-[#F9FAFB]">
+      {/* Decorative Background Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-0">
+        <div className="absolute top-[10%] left-[-5%] w-[30%] h-[30%] bg-[#2563EB]/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[20%] right-[-5%] w-[25%] h-[25%] bg-[#6366F1]/5 rounded-full blur-[100px]" />
       </div>
 
-      {/* Navbar */}
-      <nav className="relative z-10 sticky top-0 bg-slate-950/80 backdrop-blur-xl border-b border-white/5">
+      {/* Navigation */}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Hexagon className="text-blue-500 w-5 h-5" />
-            <span className="font-bold text-base tracking-tight">
-              Offer<span className="text-blue-500">Quest</span>
+          <Link href="/dashboard" className="flex items-center gap-2 group transition-all">
+            <div className="w-8 h-8 rounded-lg bg-[#2563EB] flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
+              <Sparkles className="w-4 h-4 fill-white" />
+            </div>
+            <span className="font-extrabold text-[#111827] text-xl tracking-tighter">
+              Offer<span className="text-[#2563EB]">Quest</span>
             </span>
           </Link>
 
           <div className="flex items-center gap-2">
             <Link
               href="/applications"
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-[#111827] hover:bg-[#F3F4F6] transition-all"
             >
-              <Briefcase className="w-4 h-4" />
-              <span className="hidden sm:block">Applications</span>
+              <Target className="w-4 h-4 text-[#2563EB]" />
+              <span className="hidden sm:block">My Mission Board</span>
             </Link>
+
+            <div className="h-6 w-px bg-[#E5E7EB] mx-1" />
 
             <button
               onClick={handleSignOut}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+              className="px-4 py-2 rounded-xl text-sm font-bold text-[#6B7280] hover:text-[#EF4444] hover:bg-[#FEF2F2] transition-all"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-4 h-4 sm:hidden" />
               <span className="hidden sm:block">Sign Out</span>
             </button>
           </div>
         </div>
       </nav>
 
-      <main className="relative z-10 max-w-7xl mx-auto px-6 py-8 space-y-8">
-        {/* Gamification Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <GamificationHeader
-            name={profile.name ?? 'Quester'}
-            xp={profileXp}
-            level={profileLevel}
-            streak={profile.streak ?? 1}
-          />
-        </motion.div>
-
-        {/* Stats Row */}
-        <motion.div
-          className="grid grid-cols-3 gap-4"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          {[
-            { label: 'Jobs Available', value: jobs.length, icon: <Briefcase className="w-5 h-5 text-blue-400" /> },
-            { label: 'Applied', value: appliedIds.size, icon: <Target className="w-5 h-5 text-green-400" /> },
-            { label: 'Top Matches', value: jobs.filter((j) => (j.metadata?.match_score ?? 0) >= 85).length, icon: <Hexagon className="w-5 h-5 text-purple-400" /> },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="flex items-center gap-3 p-4 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-sm"
-            >
-              <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center flex-shrink-0">
-                {stat.icon}
-              </div>
-              <div>
-                <p className="text-2xl font-black text-white">{stat.value}</p>
-                <p className="text-xs text-slate-500 font-medium">{stat.label}</p>
-              </div>
+      <main className="relative z-10 max-w-7xl mx-auto px-6 py-10 space-y-10">
+        {/* Hero Section / Header */}
+        <section className="space-y-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-1">
+              <h1 className="text-3xl font-black text-[#111827] tracking-tight">Mission Control</h1>
+              <p className="text-[#6B7280] font-medium">Identify matches, generate assets, and track your conquest.</p>
             </div>
-          ))}
-        </motion.div>
+          </div>
 
-        {/* Search & Filter */}
-        <motion.div
-          className="flex flex-col sm:flex-row gap-3"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-            <input
-              type="text"
-              placeholder="Search jobs, companies..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-11 pl-10 pr-4 rounded-xl bg-slate-900 border border-slate-800 text-white placeholder:text-slate-600 text-sm focus:outline-none focus:border-blue-500/50 transition-colors"
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4 }}
+          >
+            <GamificationHeader
+              name={profile.name ?? 'Quester'}
+              xp={profileXp}
+              level={profileLevel}
+              streak={profile.streak ?? 1}
             />
-          </div>
+          </motion.div>
+        </section>
 
-          <div className="flex items-center gap-2 overflow-x-auto pb-1">
-            {(['all', 'top', 'remote', 'london'] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`flex-shrink-0 px-4 py-2 rounded-xl text-sm font-medium capitalize transition-all ${
-                  filter === f
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                    : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-600'
-                }`}
-              >
-                {f === 'top' ? '🏆 Top Matches' : f === 'all' ? '✦ All Jobs' : f === 'remote' ? '🌍 Remote' : '🏙️ London'}
-              </button>
-            ))}
-          </div>
-        </motion.div>
+        {/* Stats Section */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            { 
+              label: 'Scouted Jobs', 
+              value: jobs.length, 
+              icon: <Briefcase className="w-5 h-5 text-[#2563EB]" />, 
+              color: 'bg-[#DBEAFE]',
+              description: 'Fresh opportunities'
+            },
+            { 
+              label: 'Active Missions', 
+              value: appliedIds.size, 
+              icon: <Target className="w-5 h-5 text-[#16A34A]" />, 
+              color: 'bg-[#DCFCE7]',
+              description: 'Applications sent'
+            },
+            { 
+              label: 'Elite Matches', 
+              value: jobs.filter((j) => (j.metadata?.match_score ?? 0) >= 85).length, 
+              icon: <Sparkles className="w-5 h-5 text-[#7C3AED]" />, 
+              color: 'bg-[#F5F3FF]',
+              description: 'Over 85% score'
+            },
+          ].map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              className="bg-white p-6 rounded-2xl border border-[#E5E7EB] shadow-sm hover:shadow-md transition-all group"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+            >
+              <div className="flex items-start justify-between">
+                <div className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                  {stat.icon}
+                </div>
+                <div className="text-[10px] font-bold text-[#6B7280] uppercase tracking-widest mt-1">Live Update</div>
+              </div>
+              <h3 className="text-3xl font-black text-[#111827] tabular-nums">{stat.value}</h3>
+              <p className="text-sm font-bold text-[#111827] mt-1">{stat.label}</p>
+              <p className="text-xs text-[#6B7280] mt-0.5">{stat.description}</p>
+            </motion.div>
+          ))}
+        </div>
 
-        {/* Job Grid */}
-        {filteredJobs.length === 0 ? (
-          <div className="text-center py-20 text-slate-500">
-            <Briefcase className="w-12 h-12 mx-auto mb-4 opacity-30" />
-            <p className="text-lg font-medium">No jobs match your search</p>
-            <p className="text-sm mt-1">Try changing your filters</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            {filteredJobs.map((job, index) => (
-              <JobCard
-                key={job.id}
-                job={job}
-                userId={userId}
-                userProfile={userProfile}
-                index={index}
-                onApply={handleApply}
+        {/* Tools & Feed Header */}
+        <div className="pt-4 space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-6 overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
+              {(['all', 'top', 'remote', 'london'] as const).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`text-sm font-bold whitespace-nowrap pb-2 outline-none transition-all border-b-2 ${
+                    filter === f
+                      ? 'text-[#2563EB] border-[#2563EB]'
+                      : 'text-[#6B7280] border-transparent hover:text-[#111827]'
+                  }`}
+                >
+                  {f === 'top' ? 'Elite Matches' : f === 'all' ? 'All Roles' : f === 'remote' ? 'Remote Only' : 'London Hub'}
+                </button>
+              ))}
+            </div>
+
+            <div className="relative w-full md:w-80 group">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B7280] group-focus-within:text-[#2563EB] transition-colors" />
+              <input
+                type="text"
+                placeholder="Search command center..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full h-11 pl-10 pr-4 rounded-xl bg-white border border-[#E5E7EB] text-[#111827] placeholder:text-[#9CA3AF] text-sm font-medium focus:ring-4 focus:ring-blue-500/5 focus:border-[#2563EB] transition-all outline-none"
               />
-            ))}
+            </div>
           </div>
-        )}
+
+          <AnimatePresence mode="popLayout">
+            {filteredJobs.length === 0 ? (
+              <motion.div 
+                className="text-center py-24 bg-white rounded-3xl border border-[#E5E7EB] border-dashed"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <div className="w-16 h-16 bg-[#F3F4F6] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Briefcase className="w-8 h-8 text-[#9CA3AF]" />
+                </div>
+                <h3 className="text-xl font-bold text-[#111827]">Area Clear</h3>
+                <p className="text-[#6B7280] font-medium mt-1">No matches found in this sector. Try different coordinates.</p>
+                <Button 
+                  onClick={() => { setSearch(''); setFilter('all'); }}
+                  variant="outline" 
+                  className="mt-6 border-[#E5E7EB] font-bold text-[#111827] rounded-xl"
+                >
+                  Reset Sensors
+                </Button>
+              </motion.div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {filteredJobs.map((job, index) => (
+                  <JobCard
+                    key={job.id}
+                    job={job}
+                    userId={userId}
+                    userProfile={userProfile}
+                    index={index}
+                    onApply={handleApply}
+                  />
+                ))}
+              </div>
+            )}
+          </AnimatePresence>
+        </div>
       </main>
     </div>
   );

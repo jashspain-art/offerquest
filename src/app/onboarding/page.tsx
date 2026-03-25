@@ -6,14 +6,14 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Hexagon, Target, Briefcase, FileText, ChevronRight } from 'lucide-react';
+import { Hexagon, Target, Briefcase, FileText, ChevronRight, ChevronLeft, Sparkles, MapPin, Zap, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { updateOnboardingProfile, uploadCVAction } from './actions';
 
 const steps = [
-  { id: 1, title: 'Basic Intel', icon: Hexagon },
-  { id: 2, title: 'Mission Parameters', icon: Target },
-  { id: 3, title: 'Target Sectors', icon: Briefcase },
-  { id: 4, title: 'Upload Dossier (CV)', icon: FileText },
+  { id: 1, title: 'Identity', icon: ShieldCheck, subtitle: 'Basic Profile' },
+  { id: 2, title: 'Strategy', icon: Target, subtitle: 'Mission Goals' },
+  { id: 3, title: 'Sectors', icon: Briefcase, subtitle: 'Target Areas' },
+  { id: 4, title: 'Dossier', icon: FileText, subtitle: 'CV Analysis' },
 ];
 
 export default function OnboardingPage() {
@@ -37,7 +37,6 @@ export default function OnboardingPage() {
     setIsSubmitting(true);
     setError(null);
     try {
-      // 1. Update Profile
       await updateOnboardingProfile({
         location: formData.location,
         jobType: formData.jobType,
@@ -46,7 +45,6 @@ export default function OnboardingPage() {
         sectors: formData.sectors,
       });
 
-      // 2. Upload CV if exists
       if (formData.cvFile) {
         const cvFormData = new FormData();
         cvFormData.append('file', formData.cvFile);
@@ -56,218 +54,308 @@ export default function OnboardingPage() {
       router.push('/dashboard');
     } catch (err) {
       console.error(err);
-      setError('Mission failure: Could not complete onboarding. Please try again.');
+      setError('Mission failure: Could not complete registration. Please try again.');
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center py-12 px-6">
-      {/* Dynamic Background */}
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-blue-900/10 via-slate-950/80 to-slate-950 z-0 pointer-events-none" />
+    <div className="min-h-screen bg-[#F9FAFB] flex flex-col items-center py-16 px-6 font-sans">
+      {/* Decorative Background */}
+      <div className="fixed inset-0 pointer-events-none -z-0">
+        <div className="absolute top-[10%] left-[-5%] w-[30%] h-[30%] bg-[#2563EB]/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[20%] right-[-5%] w-[25%] h-[25%] bg-[#6366F1]/5 rounded-full blur-[100px]" />
+      </div>
       
-      <div className="z-10 w-full max-w-3xl mb-12 flex justify-between items-center relative">
-        <div className="absolute top-1/2 left-0 w-full h-1 bg-slate-800 -translate-y-1/2 z-0 rounded-full" />
-        <motion.div 
-          className="absolute top-1/2 left-0 h-1 bg-blue-500 -translate-y-1/2 z-0 rounded-full transition-all duration-500 ease-out" 
-          style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
-        />
-
-        {steps.map((step) => {
-          const Icon = step.icon;
-          const isActive = step.id === currentStep;
-          const isCompleted = step.id < currentStep;
-
-          return (
-            <div key={step.id} className="relative z-10 flex flex-col items-center gap-3">
-              <motion.div 
-                initial={false}
-                animate={{ 
-                  backgroundColor: isActive || isCompleted ? 'rgb(59 130 246)' : 'rgb(30 41 59)',
-                  borderColor: isActive || isCompleted ? 'rgb(59 130 246)' : 'rgb(51 65 85)',
-                  scale: isActive ? 1.2 : 1
-                }}
-                className={`w-12 h-12 rounded-2xl flex items-center justify-center border-2 shadow-lg transition-colors duration-300 ${isActive ? 'shadow-[0_0_20px_rgba(37,99,235,0.4)]' : ''}`}
-              >
-                <Icon className={`w-5 h-5 ${isActive || isCompleted ? 'text-white' : 'text-slate-400'}`} />
-              </motion.div>
-              <span className={`text-xs font-bold transition-colors ${isActive ? 'text-blue-400' : 'text-slate-500'}`}>
-                {step.title}
-              </span>
+      {/* Header */}
+      <div className="z-10 mb-12 text-center">
+        <div className="flex items-center justify-center gap-2 mb-4">
+           <div className="w-8 h-8 rounded-lg bg-[#2563EB] flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+              <Sparkles className="w-4 h-4 fill-white" />
             </div>
-          )
-        })}
+            <span className="font-extrabold text-[#111827] text-xl tracking-tighter">
+              Offer<span className="text-[#2563EB]">Quest</span>
+            </span>
+        </div>
+        <h1 className="text-3xl font-black text-[#111827] tracking-tight">Mission Briefing</h1>
+        <p className="text-[#6B7280] font-medium mt-1">Initialize your profile to deploy AI agents.</p>
       </div>
 
+      {/* Stepper */}
+      <div className="z-10 w-full max-w-2xl mb-16 px-4">
+        <div className="relative flex justify-between">
+          <div className="absolute top-[22px] left-0 w-full h-[2px] bg-[#E5E7EB] z-0" />
+          <motion.div 
+            className="absolute top-[22px] left-0 h-[2px] bg-[#2563EB] z-0" 
+            initial={false}
+            animate={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
+            transition={{ duration: 0.5 }}
+          />
+
+          {steps.map((step) => {
+            const Icon = step.icon;
+            const isActive = step.id === currentStep;
+            const isCompleted = step.id < currentStep;
+
+            return (
+              <div key={step.id} className="relative z-10 flex flex-col items-center group">
+                <motion.div 
+                  initial={false}
+                  animate={{ 
+                    backgroundColor: isActive || isCompleted ? '#2563EB' : '#FFFFFF',
+                    borderColor: isActive || isCompleted ? '#2563EB' : '#E5E7EB',
+                    scale: isActive ? 1.1 : 1
+                  }}
+                  className="w-11 h-11 rounded-xl border-2 flex items-center justify-center shadow-sm transition-all duration-300"
+                >
+                  {isCompleted ? (
+                    <CheckCircle2 className="w-5 h-5 text-white" />
+                  ) : (
+                    <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-[#9CA3AF]'}`} />
+                  )}
+                </motion.div>
+                <div className="absolute -bottom-8 whitespace-nowrap text-center">
+                  <p className={`text-[10px] font-black uppercase tracking-widest ${isActive ? 'text-[#111827]' : 'text-[#9CA3AF]'}`}>
+                    {step.title}
+                  </p>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Form Card */}
       <div className="z-10 w-full max-w-xl">
         <motion.div 
           key={currentStep}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
+          initial={{ opacity: 0, scale: 0.98, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.98, y: -10 }}
           transition={{ duration: 0.4 }}
-          className="bg-slate-900/50 border border-slate-800 backdrop-blur-xl rounded-3xl p-8 shadow-2xl"
+          className="bg-white border border-[#E5E7EB] rounded-[2rem] p-10 shadow-2xl shadow-black/[0.02]"
         >
-          {currentStep === 1 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-2">Basic Intel</h2>
-                <p className="text-slate-400 text-sm">Let&apos;s start with your identity and location.</p>
-              </div>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Target Location</Label>
+          <AnimatePresence mode="wait">
+            {currentStep === 1 && (
+              <motion.div key="step1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+                <div>
+                  <h2 className="text-2xl font-black text-[#111827] tracking-tight mb-2 flex items-center gap-2">
+                    <ShieldCheck className="w-6 h-6 text-[#2563EB]" /> Identification
+                  </h2>
+                  <p className="text-[#6B7280] font-medium text-sm">Where are you operating from?</p>
+                </div>
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <Label className="text-xs font-black uppercase tracking-widest text-[#9CA3AF] ml-1">Target Coordinates (Location)</Label>
+                    <div className="relative group">
+                       <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF] group-focus-within:text-[#2563EB]" />
+                       <Input 
+                        placeholder="e.g. London, San Francisco, Remote" 
+                        value={formData.location}
+                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                        className="h-12 pl-11 bg-[#F9FAFB] border-[#E5E7EB] rounded-2xl font-medium focus-visible:ring-4 focus-visible:ring-blue-500/5 focus-visible:border-[#2563EB] transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <Label className="text-xs font-black uppercase tracking-widest text-[#9CA3AF] ml-1">Job Type Category</Label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {['Full-time', 'Part-time', 'Contract', 'Internship'].map(type => (
+                        <button 
+                          key={type}
+                          onClick={() => setFormData({ ...formData, jobType: type })}
+                          className={`h-12 rounded-2xl border text-sm font-bold flex items-center justify-center transition-all ${
+                            formData.jobType === type 
+                              ? 'bg-[#111827] border-[#111827] text-white shadow-lg' 
+                              : 'bg-white border-[#E5E7EB] text-[#6B7280] hover:border-[#2563EB] hover:text-[#2563EB]'
+                          }`}
+                        >
+                          {type}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {currentStep === 2 && (
+              <motion.div key="step2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+                <div>
+                  <h2 className="text-2xl font-black text-[#111827] tracking-tight mb-2 flex items-center gap-2">
+                    <Target className="w-6 h-6 text-[#16A34A]" /> Mission Parameters
+                  </h2>
+                  <p className="text-[#6B7280] font-medium text-sm">Define your experience and operational mode.</p>
+                </div>
+                <div className="space-y-6">
+                  <div className="space-y-3">
+                    <Label className="text-xs font-black uppercase tracking-widest text-[#9CA3AF] ml-1">Experience Level</Label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {['Entry Level', 'Mid Level', 'Senior', 'Executive'].map(level => (
+                        <button 
+                          key={level}
+                          onClick={() => setFormData({ ...formData, experience: level })}
+                          className={`h-12 rounded-2xl border text-sm font-bold flex items-center justify-center transition-all ${
+                            formData.experience === level 
+                              ? 'bg-[#111827] border-[#111827] text-white shadow-lg' 
+                              : 'bg-white border-[#E5E7EB] text-[#6B7280] hover:border-[#2563EB] hover:text-[#2563EB]'
+                          }`}
+                        >
+                          {level}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <Label className="text-xs font-black uppercase tracking-widest text-[#9CA3AF] ml-1">Workspace Preference</Label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {['Remote', 'Hybrid', 'On-site'].map(mode => (
+                        <button 
+                          key={mode}
+                          onClick={() => setFormData({ ...formData, workMode: mode })}
+                          className={`h-12 rounded-2xl border text-[11px] font-black uppercase tracking-tighter flex items-center justify-center transition-all ${
+                            formData.workMode === mode 
+                              ? 'bg-[#2563EB] border-[#2563EB] text-white shadow-lg shadow-blue-500/10' 
+                              : 'bg-white border-[#E5E7EB] text-[#6B7280] hover:border-[#2563EB] hover:text-[#2563EB]'
+                          }`}
+                        >
+                          {mode}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {currentStep === 3 && (
+              <motion.div key="step3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+                <div>
+                  <h2 className="text-2xl font-black text-[#111827] tracking-tight mb-2 flex items-center gap-2">
+                    <Briefcase className="w-6 h-6 text-[#7C3AED]" /> Target Sectors
+                  </h2>
+                  <p className="text-[#6B7280] font-medium text-sm">Which industries are you aiming to conquer?</p>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {['Technology', 'Finance', 'Healthcare', 'Consulting', 'Design', 'Marketing', 'Engineering', 'Web3'].map(sector => (
+                    <button 
+                      key={sector}
+                      onClick={() => {
+                        const newSectors = formData.sectors.includes(sector)
+                          ? formData.sectors.filter(s => s !== sector)
+                          : [...formData.sectors, sector];
+                        setFormData({ ...formData, sectors: newSectors });
+                      }}
+                      className={`h-12 rounded-2xl border text-sm font-bold flex items-center justify-center transition-all ${
+                        formData.sectors.includes(sector) 
+                          ? 'bg-[#7C3AED] border-[#7C3AED] text-white shadow-lg shadow-purple-500/10' 
+                          : 'bg-white border-[#E5E7EB] text-[#6B7280] hover:border-[#7C3AED] hover:text-[#7C3AED]'
+                      }`}
+                    >
+                      {sector}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {currentStep === 4 && (
+              <motion.div key="step4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+                <div>
+                  <h2 className="text-2xl font-black text-[#111827] tracking-tight mb-2 flex items-center gap-2">
+                    <FileText className="w-6 h-6 text-[#F59E0B]" /> Dossier Upload
+                  </h2>
+                  <p className="text-[#6B7280] font-medium text-sm">Upload your CV. Our AI will analyze your skills to build your rank.</p>
+                </div>
+                
+                <div className="relative border-4 border-dashed border-[#F3F4F6] bg-[#F9FAFB] rounded-[2rem] p-12 flex flex-col items-center justify-center text-center group hover:bg-blue-50 hover:border-blue-100 transition-all duration-500">
+                  <div className="w-16 h-16 bg-white rounded-[1.25rem] shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <FileText className="w-8 h-8 text-[#9CA3AF] group-hover:text-[#2563EB]" />
+                  </div>
+                  <Label htmlFor="cv-upload" className="font-bold text-[#111827] cursor-pointer mb-2">
+                    <span className="text-[#2563EB] underline underline-offset-4 decoration-2">Click to select dossier</span>
+                  </Label>
+                  <p className="text-[#9CA3AF] text-xs font-bold uppercase tracking-widest">PDF or DOCX max 5MB</p>
                   <Input 
-                    placeholder="e.g. London, Remote, New York" 
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    className="bg-slate-950/50 border-slate-800 text-white rounded-xl h-12"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Job Type</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {['Full-time', 'Part-time', 'Contract', 'Internship'].map(type => (
-                      <div 
-                        key={type}
-                        onClick={() => setFormData({ ...formData, jobType: type })}
-                        className={`p-3 rounded-xl border flex items-center justify-center cursor-pointer transition-colors ${formData.jobType === type ? 'bg-blue-600 border-blue-500 text-white' : 'bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-500'}`}
-                      >
-                        {type}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {currentStep === 2 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-2">Mission Parameters</h2>
-                <p className="text-slate-400 text-sm">What kind of experience do you have?</p>
-              </div>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Experience Level</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {['Entry Level', 'Mid Level', 'Senior', 'Executive'].map(level => (
-                      <div 
-                        key={level}
-                        onClick={() => setFormData({ ...formData, experience: level })}
-                        className={`p-3 rounded-xl border flex items-center justify-center cursor-pointer transition-colors ${formData.experience === level ? 'bg-blue-600 border-blue-500 text-white' : 'bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-500'}`}
-                      >
-                        {level}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Work Mode</Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {['Remote', 'Hybrid', 'On-site'].map(mode => (
-                      <div 
-                        key={mode}
-                        onClick={() => setFormData({ ...formData, workMode: mode })}
-                        className={`p-3 text-sm rounded-xl border flex items-center justify-center cursor-pointer transition-colors ${formData.workMode === mode ? 'bg-purple-600 border-purple-500 text-white' : 'bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-500'}`}
-                      >
-                        {mode}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {currentStep === 3 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-2">Target Sectors</h2>
-                <p className="text-slate-400 text-sm">Select the industries you want to conquer.</p>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                {['Technology', 'Finance', 'Healthcare', 'Consulting', 'Design', 'Marketing', 'Engineering', 'Web3'].map(sector => (
-                  <div 
-                    key={sector}
-                    onClick={() => {
-                      const newSectors = formData.sectors.includes(sector)
-                        ? formData.sectors.filter(s => s !== sector)
-                        : [...formData.sectors, sector];
-                      setFormData({ ...formData, sectors: newSectors });
+                    id="cv-upload" 
+                    type="file" 
+                    accept=".pdf,.doc,.docx"
+                    className="hidden" 
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) setFormData({ ...formData, cvFile: file });
                     }}
-                    className={`p-3 text-sm rounded-xl border flex items-center justify-center cursor-pointer transition-colors ${formData.sectors.includes(sector) ? 'bg-blue-600 border-blue-500 text-white shadow-lg' : 'bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-500'}`}
-                  >
-                    {sector}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {currentStep === 4 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-2">Upload Dossier</h2>
-                <p className="text-slate-400 text-sm">Upload your CV. Our AI will parse your skills to find the best missions.</p>
-              </div>
-              
-              <div className="border-2 border-dashed border-slate-700 bg-slate-950/50 rounded-2xl p-8 flex flex-col items-center justify-center text-center">
-                <FileText className="w-12 h-12 text-slate-500 mb-4" />
-                <Label htmlFor="cv-upload" className="mb-2 text-blue-400 cursor-pointer hover:text-blue-300 font-medium">
-                  Click to browse
-                </Label>
-                <span className="text-slate-500 text-sm">or drag and drop your PDF/DOCX</span>
-                <Input 
-                  id="cv-upload" 
-                  type="file" 
-                  accept=".pdf,.doc,.docx"
-                  className="hidden" 
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) setFormData({ ...formData, cvFile: file });
-                  }}
-                />
-                {formData.cvFile && (
-                  <div className="mt-4 px-4 py-2 bg-blue-500/20 text-blue-300 rounded-lg text-sm flex items-center gap-2">
-                    <FileText className="w-4 h-4" />
-                    {formData.cvFile.name}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+                  />
+                  {formData.cvFile && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 px-4 py-2 bg-[#2563EB] text-white rounded-xl text-xs font-bold flex items-center gap-2 shadow-lg shadow-blue-500/20">
+                      <CheckCircle2 className="w-4 h-4" />
+                      {formData.cvFile.name}
+                    </motion.div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {error && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm text-center">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-xs font-bold flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-red-600" />
               {error}
             </motion.div>
           )}
 
-          <div className="mt-8 flex items-center justify-between pt-6 border-t border-slate-800">
+          <div className="mt-12 flex items-center justify-between pt-8 border-t border-[#F3F4F6]">
             {currentStep > 1 ? (
-               <Button variant="ghost" className="text-slate-400 hover:text-white" onClick={handlePrev}>
-                Back
-               </Button>
+               <button 
+                onClick={handlePrev}
+                className="flex items-center gap-2 text-sm font-bold text-[#6B7280] hover:text-[#111827] transition-colors"
+               >
+                <ChevronLeft className="w-4 h-4" /> Back
+               </button>
             ) : <div />}
             
             {currentStep < steps.length ? (
-              <Button onClick={handleNext} className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl">
-                Next Step <ChevronRight className="ml-1 w-4 h-4" />
+              <Button 
+                onClick={handleNext} 
+                className="h-12 px-8 bg-[#111827] hover:bg-[#111827]/90 text-white rounded-2xl font-bold shadow-xl shadow-black/5 group"
+              >
+                Proceed <ChevronRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             ) : (
               <Button 
                 onClick={completeOnboarding} 
-                className="bg-green-600 hover:bg-green-500 text-white rounded-xl px-6 shadow-[0_0_20px_rgba(22,163,74,0.3)]"
+                className="h-12 px-8 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-2xl font-bold shadow-xl shadow-blue-500/20 active:scale-95 group"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Analyzing Dossier...' : 'Complete Registration'}
+                {isSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Analyzing Dossier...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    Complete Onboarding <Zap className="w-4 h-4 fill-white group-hover:scale-110 transition-transform" />
+                  </span>
+                )}
               </Button>
             )}
           </div>
         </motion.div>
       </div>
+
+      <p className="mt-12 text-[#9CA3AF] text-[10px] font-black uppercase tracking-[0.2em] z-10">OfferQuest Advanced Recruitment Engine v1.0</p>
     </div>
+  );
+}
+
+function Loader2({ className }: { className?: string }) {
+  return (
+    <svg 
+      className={className}
+      xmlns="http://www.w3.org/2000/svg" 
+      width="24" height="24" viewBox="0 0 24 24" fill="none" 
+      stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+    >
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
   );
 }

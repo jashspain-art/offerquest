@@ -1,36 +1,41 @@
 import { ReactNode } from 'react'
-import { motion } from 'framer-motion'
-import { Hexagon } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
+import Link from 'next/link'
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-950/80 to-slate-950 z-0" />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl z-0" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl z-0" />
+    <div className="min-h-screen bg-[#F9FAFB] flex flex-col items-center justify-center relative overflow-hidden font-sans">
+      {/* Decorative Background Elements */}
+      <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#2563EB]/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#6366F1]/5 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* Brand */}
-      <div className="z-10 mb-8 mt-12 text-center flex flex-col items-center gap-3">
-        <div className="h-16 w-16 bg-blue-600/20 border border-blue-500/50 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(37,99,235,0.3)] backdrop-blur-md">
-          <Hexagon className="text-blue-500 w-8 h-8" />
-        </div>
-        <div>
-          <h1 className="text-4xl font-black tracking-tight text-white">
-            Offer<span className="text-blue-500">Quest</span>
-          </h1>
-          <p className="text-slate-400 mt-2 text-sm max-w-[280px]">
-            Your gamified, AI-powered journey to the perfect job starts here.
-          </p>
-        </div>
+      {/* Brand / Logo */}
+      <div className="z-10 mb-10 text-center flex flex-col items-center gap-4">
+        <Link href="/" className="flex flex-col items-center gap-4 group transition-all active:scale-95">
+          <div className="h-16 w-16 bg-white border border-[#E5E7EB] rounded-2xl flex items-center justify-center shadow-xl shadow-black/5 group-hover:border-[#2563EB]/20 transition-all">
+            <Sparkles className="text-[#2563EB] w-8 h-8 fill-[#2563EB]/10" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-black tracking-tightest text-[#111827]">
+              Offer<span className="text-[#2563EB]">Quest</span>
+            </h1>
+          </div>
+        </Link>
+        <p className="text-[#6B7280] text-sm font-medium max-w-[280px]">
+          Identify. Apply. Conquer. <br/>
+          Your journey to the top starts here.
+        </p>
       </div>
 
-      <div className="z-10 w-full max-w-md px-6 pb-12">
-        <div className="bg-slate-900/40 border border-slate-800 backdrop-blur-xl rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-          {/* Shine effect */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-transparent opacity-50 pointer-events-none" />
+      {/* Auth Card Container */}
+      <div className="z-10 w-full max-w-[440px] px-6 pb-12">
+        <div className="bg-white border border-[#E5E7EB] rounded-[2rem] p-10 shadow-2xl shadow-black/[0.03] relative overflow-hidden">
           {children}
         </div>
+        
+        <p className="mt-8 text-center text-[#9CA3AF] text-xs font-bold uppercase tracking-widest">
+          Secure cloud infrastructure by Supabase
+        </p>
       </div>
     </div>
   )

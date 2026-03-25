@@ -132,9 +132,11 @@ export default function ApplicationsClient({
             <p className="text-[#6B7280] font-medium text-center max-w-xs mt-2">
               Launch your first mission from the dashboard to start tracking progress.
             </p>
-            <Button asChild className="mt-8 h-12 px-8 bg-[#2563EB] hover:bg-[#1D4ED8] rounded-2xl shadow-lg shadow-blue-500/10 active:scale-[0.98]">
-              <Link href="/dashboard">Return to Mission Control <ArrowRight className="ml-2 w-4 h-4" /></Link>
-            </Button>
+            <Link href="/dashboard" className="mt-8">
+              <Button className="h-12 px-8 bg-[#2563EB] hover:bg-[#1D4ED8] rounded-2xl shadow-lg shadow-blue-500/10 active:scale-[0.98]">
+                Return to Mission Control <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
